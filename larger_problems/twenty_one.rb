@@ -1,4 +1,6 @@
 module Displayable
+  private
+
   def show_welcome_screen
     clear
     puts "Hi #{human.name} and welcome to TWENTY ONE!"
@@ -244,15 +246,10 @@ class Player
     @deck = deck
   end
 
-  def hit_or_stay
-    choice = ''
-    loop do
-      puts "Would you like to Hit (h) or Stay (s)"
-      choice = gets.chomp.downcase
-      break if choice == 'h' || choice == 's'
-      puts "Please only enter 'h' or 's'"
-    end
-    choice
+  def hit
+    card = deck.cards.sample
+    hand << card
+    deck.cards.delete(card)
   end
 
   def hand_total
@@ -267,10 +264,6 @@ class Player
     total - ace_correction(total)
   end
 
-  def ace_included?
-    hand.any? { |card| card[0] == "Ace" }
-  end
-
   def ace_correction(total)
     current_total = total
     correction = 0
@@ -283,26 +276,18 @@ class Player
     correction
   end
 
-  def hit
-    card = deck.cards.sample
-    hand << card
-    deck.cards.delete(card)
-  end
-
   def busted?
     hand_total > 21
   end
 end
 
 class Human < Player
-  def name_me
-    name = ""
-    loop do
-      puts "What is your name?"
-      name = gets.chomp.capitalize
-      break unless name.strip.empty?
-    end
-    name
+  def display_cards
+    name = self.name
+    puts "#{name}'s hand has a"
+    hand.each { |card| puts "#{card[0]} of #{card[1]}" }
+    puts ""
+    puts "#{name}'s' total is #{hand_total}"
   end
 
   def take_turn
@@ -315,20 +300,36 @@ class Human < Player
     display_turn_result
   end
 
-  def display_cards
-    name = self.name
-    puts "#{name}'s hand has a"
-    hand.each { |card| puts "#{card[0]} of #{card[1]}" }
-    puts ""
-    puts "#{name}'s' total is #{hand_total}"
+  private
+
+  def name_me
+    name = ""
+    loop do
+      puts "What is your name?"
+      name = gets.chomp.capitalize
+      break unless name.strip.empty?
+    end
+    name
+  end
+
+  def hit_or_stay
+    choice = ''
+    loop do
+      puts "Would you like to Hit (h) or Stay (s)"
+      choice = gets.chomp.downcase
+      break if choice == 'h' || choice == 's'
+      puts "Please only enter 'h' or 's'"
+    end
+    choice
   end
 end
 
 class Computer < Player
   NAMES = ["Pattern", "Skynet", "Hal", "Franky", "Optimus Prime", "Aizen"]
 
-  def name_me
-    NAMES.sample
+  def display_cards
+    puts "#{name} is showing a #{hand[1][0]} of #{hand[1][1]}"
+    puts ""
   end
 
   def take_turn
@@ -342,9 +343,10 @@ class Computer < Player
     display_turn_result
   end
 
-  def display_cards
-    puts "#{name} is showing a #{hand[1][0]} of #{hand[1][1]}"
-    puts ""
+  private
+
+  def name_me
+    NAMES.sample
   end
 
   def display_hidden_card
@@ -359,9 +361,7 @@ class Deck
     @cards = new_deck
   end
 
-  def shuffle
-    cards.shuffle
-  end
+  private
 
   def new_deck
     suits = ["Spades", "Diamonds", "Hearts", "Clubs"]
