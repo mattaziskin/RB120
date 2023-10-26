@@ -7,6 +7,7 @@ module Walk
     puts "#{self} #{gait} forward"
   end
 end
+
 class Person
   include Walk
   attr_reader :name
@@ -28,6 +29,7 @@ end
 
 class Noble < Person
   attr_reader :title
+
   def initialize(name, title)
     super(name)
     @title = title

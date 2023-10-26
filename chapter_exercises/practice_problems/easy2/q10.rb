@@ -15,3 +15,4 @@ Protection of data
     It allows us to easily give functionality to different parts of an application without duplication.
     We can build applications faster as we can reuse pre-written code.
     As the software becomes more complex this complexity can be more easily managed.
+=end
