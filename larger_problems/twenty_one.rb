@@ -1,6 +1,3 @@
-require 'pry'
-require 'pry-byebug'
-
 module Displayable
   def show_welcome_screen
     clear
